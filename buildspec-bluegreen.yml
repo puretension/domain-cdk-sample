@@ -1,0 +1,34 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      
+  build:
+    commands:
+      - echo Build started on `date`
+      - cd app
+      - docker build --platform linux/amd64 -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      
+  post_build:
+    commands:
+      - echo Pushing Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - echo Creating new task definition...
+      - |
+        TASK_DEF=$(aws ecs describe-task-definition --task-definition fast-scaling-task --query taskDefinition)
+        NEW_TASK_DEF=$(echo $TASK_DEF | jq --arg IMAGE "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG" '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.placementConstraints) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)')
+        echo $NEW_TASK_DEF > taskdef.json
+      - echo Starting Blue/Green deployment...
+      - |
+        aws deploy create-deployment \
+          --application-name FastScalingApp \
+          --deployment-group-name FastScalingDeploymentGroup \
+          --revision revisionType=S3,s3Location="{bucket=fast-scaling-artifacts,key=taskdef.json,bundleType=JSON}"
+
+artifacts:
+  files:
+    - taskdef.json
