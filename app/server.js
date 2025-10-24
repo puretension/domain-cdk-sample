@@ -251,3 +251,4 @@ process.on('SIGINT', () => {
 });
 
 module.exports = app;// Pipeline test #오후
+// 🚀 GitHub Actions 파이프라인 테스트 - 2025-10-25 01:16:27
