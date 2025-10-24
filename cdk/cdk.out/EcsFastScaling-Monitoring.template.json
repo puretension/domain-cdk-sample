@@ -1,0 +1,389 @@
+{
+ "Description": "CloudWatch monitoring and alarms for fast scaling",
+ "Resources": {
+  "FastScalingAlertsE2879742": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "Fast Scaling Alerts",
+    "Tags": [
+     {
+      "Key": "Component",
+      "Value": "Alerts"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "TopicName": "fast-scaling-alerts"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Monitoring/FastScalingAlerts/Resource"
+   }
+  },
+  "FastScalingDashboardD38D9BBC": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"alarm\",\"width\":24,\"height\":4,\"x\":0,\"y\":0,\"properties\":{\"title\":\"Alarm Status\",\"alarms\":[\"",
+       {
+        "Fn::GetAtt": [
+         "HighCpuAlarm40723000",
+         "Arn"
+        ]
+       },
+       "\",\"",
+       {
+        "Fn::GetAtt": [
+         "HighMemoryAlarmB77DAB20",
+         "Arn"
+        ]
+       },
+       "\",\"",
+       {
+        "Fn::GetAtt": [
+         "HighRequestRateAlarm3412369B",
+         "Arn"
+        ]
+       },
+       "\",\"",
+       {
+        "Fn::GetAtt": [
+         "HighResponseTimeAlarmCB9F63BA",
+         "Arn"
+        ]
+       },
+       "\",\"",
+       {
+        "Fn::GetAtt": [
+         "CustomRpsAlarm0E30B6B2",
+         "Arn"
+        ]
+       },
+       "\"]}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":4,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Custom Application Metrics\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"FastScaling/Application\",\"RequestsPerSecond\",{\"period\":10}],[\"FastScaling/Application\",\"AverageResponseTime\",{\"period\":10,\"yAxis\":\"right\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":4,\"properties\":{\"view\":\"timeSeries\",\"title\":\"ECS Service Metrics\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ECS\",\"CPUUtilization\",\"ClusterName\",\"",
+       {
+        "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputRefFastScalingCluster370BCB5D9AC34CF6"
+       },
+       "\",\"ServiceName\",\"",
+       {
+        "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputFnGetAttEcsService81FC6EF6Name1D81E5BE"
+       },
+       "\",{\"period\":60}],[\"AWS/ECS\",\"MemoryUtilization\",\"ClusterName\",\"",
+       {
+        "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputRefFastScalingCluster370BCB5D9AC34CF6"
+       },
+       "\",\"ServiceName\",\"",
+       {
+        "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputFnGetAttEcsService81FC6EF6Name1D81E5BE"
+       },
+       "\",{\"period\":60}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":10,\"properties\":{\"view\":\"timeSeries\",\"title\":\"ALB Metrics\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApplicationELB\",\"RequestCount\",\"LoadBalancer\",\"",
+       {
+        "Fn::ImportValue": "EcsFastScaling-Network:ExportsOutputFnGetAttFastScalingAlb348579DCLoadBalancerFullNameF8312E76"
+       },
+       "\",{\"period\":60,\"stat\":\"Sum\"}],[\"AWS/ApplicationELB\",\"TargetResponseTime\",\"LoadBalancer\",\"",
+       {
+        "Fn::ImportValue": "EcsFastScaling-Network:ExportsOutputFnGetAttFastScalingAlb348579DCLoadBalancerFullNameF8312E76"
+       },
+       "\",{\"period\":60,\"yAxis\":\"right\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":10,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Error Rate\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApplicationELB\",\"HTTPCode_ELB_5XX_Count\",\"LoadBalancer\",\"",
+       {
+        "Fn::ImportValue": "EcsFastScaling-Network:ExportsOutputFnGetAttFastScalingAlb348579DCLoadBalancerFullNameF8312E76"
+       },
+       "\",{\"period\":60,\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "Fast-Scaling-Monitoring"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Monitoring/FastScalingDashboard/Resource"
+   }
+  },
+  "HighCpuAlarm40723000": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "AlarmDescription": "High CPU utilization detected",
+    "AlarmName": "FastScaling-HighCPU",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 2,
+    "Dimensions": [
+     {
+      "Name": "ClusterName",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputRefFastScalingCluster370BCB5D9AC34CF6"
+      }
+     },
+     {
+      "Name": "ServiceName",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputFnGetAttEcsService81FC6EF6Name1D81E5BE"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/ECS",
+    "OKActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "Period": 60,
+    "Statistic": "Average",
+    "Threshold": 70,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Monitoring/HighCpuAlarm/Resource"
+   }
+  },
+  "HighMemoryAlarmB77DAB20": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "AlarmDescription": "High memory utilization detected",
+    "AlarmName": "FastScaling-HighMemory",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 2,
+    "Dimensions": [
+     {
+      "Name": "ClusterName",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputRefFastScalingCluster370BCB5D9AC34CF6"
+      }
+     },
+     {
+      "Name": "ServiceName",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputFnGetAttEcsService81FC6EF6Name1D81E5BE"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "MemoryUtilization",
+    "Namespace": "AWS/ECS",
+    "OKActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "Period": 60,
+    "Statistic": "Average",
+    "Threshold": 80,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Monitoring/HighMemoryAlarm/Resource"
+   }
+  },
+  "HighRequestRateAlarm3412369B": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "AlarmDescription": "High request rate detected from ALB",
+    "AlarmName": "FastScaling-HighRequestRate",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Network:ExportsOutputFnGetAttFastScalingAlb348579DCLoadBalancerFullNameF8312E76"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "RequestCount",
+    "Namespace": "AWS/ApplicationELB",
+    "OKActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "Period": 60,
+    "Statistic": "Sum",
+    "Threshold": 1000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Monitoring/HighRequestRateAlarm/Resource"
+   }
+  },
+  "HighResponseTimeAlarmCB9F63BA": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "AlarmDescription": "High response time detected",
+    "AlarmName": "FastScaling-HighResponseTime",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 2,
+    "Dimensions": [
+     {
+      "Name": "LoadBalancer",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Network:ExportsOutputFnGetAttFastScalingAlb348579DCLoadBalancerFullNameF8312E76"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "TargetResponseTime",
+    "Namespace": "AWS/ApplicationELB",
+    "OKActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "Period": 60,
+    "Statistic": "Average",
+    "Threshold": 0.5,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Monitoring/HighResponseTimeAlarm/Resource"
+   }
+  },
+  "CustomRpsAlarm0E30B6B2": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "AlarmDescription": "High requests per second from custom metrics",
+    "AlarmName": "FastScaling-CustomRPS",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "EvaluationPeriods": 1,
+    "MetricName": "RequestsPerSecond",
+    "Namespace": "FastScaling/Application",
+    "OKActions": [
+     {
+      "Ref": "FastScalingAlertsE2879742"
+     }
+    ],
+    "Period": 10,
+    "Statistic": "Average",
+    "Threshold": 100,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Monitoring/CustomRpsAlarm/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/0WOsRLCIBBEv8WenJjO0tHemWjvXA6ckBDIcGAKhn83xMJq375ttoWTlCAPuHJDamqs6SE/ItIkNvXK7Bjy0y+GxPXtdiiCrE9qxUgD5Bvy0HsMqu7/crEY5qp2KKXiPcUlxUqdZp8C6SKcVxpGPn5aCeftx8jGNCG5aGYN3S+/LabBNaQAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Monitoring/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "DashboardUrl": {
+   "Description": "CloudWatch Dashboard URL",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://ap-northeast-2.console.aws.amazon.com/cloudwatch/home?region=ap-northeast-2#dashboards:name=",
+      {
+       "Ref": "FastScalingDashboardD38D9BBC"
+      }
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "FastScaling-DashboardUrl"
+   }
+  },
+  "AlertTopicArn": {
+   "Description": "SNS Alert Topic ARN",
+   "Value": {
+    "Ref": "FastScalingAlertsE2879742"
+   },
+   "Export": {
+    "Name": "FastScaling-AlertTopicArn"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

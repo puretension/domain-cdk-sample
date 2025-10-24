@@ -1,0 +1,418 @@
+{
+ "Description": "Auto scaling policies for fast response",
+ "Resources": {
+  "EcsScalingTargetRoleBA3CDD5B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "application-autoscaling.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Component",
+      "Value": "AutoScaling"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/EcsScalingTarget/Role/Resource"
+   }
+  },
+  "EcsScalingTargetF8C0CAF3": {
+   "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+   "Properties": {
+    "MaxCapacity": 100,
+    "MinCapacity": 2,
+    "ResourceId": {
+     "Fn::Join": [
+      "",
+      [
+       "service/",
+       {
+        "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputRefFastScalingCluster370BCB5D9AC34CF6"
+       },
+       "/",
+       {
+        "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputFnGetAttEcsService81FC6EF6Name1D81E5BE"
+       }
+      ]
+     ]
+    },
+    "RoleARN": {
+     "Fn::GetAtt": [
+      "EcsScalingTargetRoleBA3CDD5B",
+      "Arn"
+     ]
+    },
+    "ScalableDimension": "ecs:service:DesiredCount",
+    "ScheduledActions": [
+     {
+      "ScalableTargetAction": {
+       "MaxCapacity": 100,
+       "MinCapacity": 5
+      },
+      "Schedule": "cron(30 8 * * ? *)",
+      "ScheduledActionName": "MorningScaleOut"
+     },
+     {
+      "ScalableTargetAction": {
+       "MaxCapacity": 100,
+       "MinCapacity": 2
+      },
+      "Schedule": "cron(0 22 * * ? *)",
+      "ScheduledActionName": "EveningScaleIn"
+     },
+     {
+      "ScalableTargetAction": {
+       "MaxCapacity": 100,
+       "MinCapacity": 1
+      },
+      "Schedule": "cron(0 23 ? * FRI *)",
+      "ScheduledActionName": "WeekendScaleDown"
+     },
+     {
+      "ScalableTargetAction": {
+       "MaxCapacity": 100,
+       "MinCapacity": 2
+      },
+      "Schedule": "cron(0 7 ? * MON *)",
+      "ScheduledActionName": "WeekendScaleUp"
+     }
+    ],
+    "ServiceNamespace": "ecs"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/EcsScalingTarget/Resource"
+   }
+  },
+  "EcsScalingTargetCpuTargetTracking2F78152A": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "EcsFastScalingAutoScalingEcsScalingTargetCpuTargetTrackingB05C4D74",
+    "PolicyType": "TargetTrackingScaling",
+    "ScalingTargetId": {
+     "Ref": "EcsScalingTargetF8C0CAF3"
+    },
+    "TargetTrackingScalingPolicyConfiguration": {
+     "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+     },
+     "ScaleInCooldown": 300,
+     "ScaleOutCooldown": 60,
+     "TargetValue": 60
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/EcsScalingTarget/CpuTargetTracking/Resource"
+   }
+  },
+  "ScaleOutPolicyUpperPolicyE4D28961": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "EcsFastScalingAutoScalingScaleOutPolicyUpperPolicy9D2F083C",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "EcsScalingTargetF8C0CAF3"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "Cooldown": 10,
+     "MetricAggregationType": "Average",
+     "StepAdjustments": [
+      {
+       "MetricIntervalLowerBound": 0,
+       "MetricIntervalUpperBound": 50,
+       "ScalingAdjustment": 1
+      },
+      {
+       "MetricIntervalLowerBound": 50,
+       "MetricIntervalUpperBound": 100,
+       "ScalingAdjustment": 2
+      },
+      {
+       "MetricIntervalLowerBound": 100,
+       "ScalingAdjustment": 4
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/ScaleOutPolicy/UpperPolicy/Resource"
+   }
+  },
+  "ScaleOutPolicyUpperAlarm7B44C313": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "ScaleOutPolicyUpperPolicyE4D28961"
+     }
+    ],
+    "AlarmDescription": "Upper threshold scaling alarm",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "MetricName": "RequestsPerSecond",
+    "Namespace": "FastScaling/Application",
+    "Period": 10,
+    "Statistic": "Average",
+    "Threshold": 100
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/ScaleOutPolicy/UpperAlarm/Resource"
+   }
+  },
+  "ScaleInPolicyLowerPolicy55F72295": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "EcsFastScalingAutoScalingScaleInPolicyLowerPolicy4A566D81",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "EcsScalingTargetF8C0CAF3"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "Cooldown": 300,
+     "MetricAggregationType": "Average",
+     "StepAdjustments": [
+      {
+       "MetricIntervalLowerBound": -20,
+       "MetricIntervalUpperBound": 0,
+       "ScalingAdjustment": -1
+      },
+      {
+       "MetricIntervalUpperBound": -20,
+       "ScalingAdjustment": -2
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/ScaleInPolicy/LowerPolicy/Resource"
+   }
+  },
+  "ScaleInPolicyLowerAlarm93D718C2": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "ScaleInPolicyLowerPolicy55F72295"
+     }
+    ],
+    "AlarmDescription": "Lower threshold scaling alarm",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "MetricName": "RequestsPerSecond",
+    "Namespace": "FastScaling/Application",
+    "Period": 60,
+    "Statistic": "Average",
+    "Threshold": 50
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/ScaleInPolicy/LowerAlarm/Resource"
+   }
+  },
+  "CpuScaleOutPolicyUpperPolicy8E1D145F": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "EcsFastScalingAutoScalingCpuScaleOutPolicyUpperPolicyB31C77A1",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "EcsScalingTargetF8C0CAF3"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "Cooldown": 60,
+     "MetricAggregationType": "Average",
+     "StepAdjustments": [
+      {
+       "MetricIntervalLowerBound": 0,
+       "MetricIntervalUpperBound": 20,
+       "ScalingAdjustment": 1
+      },
+      {
+       "MetricIntervalLowerBound": 20,
+       "ScalingAdjustment": 2
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/CpuScaleOutPolicy/UpperPolicy/Resource"
+   }
+  },
+  "CpuScaleOutPolicyUpperAlarm46E3508A": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "CpuScaleOutPolicyUpperPolicy8E1D145F"
+     }
+    ],
+    "AlarmDescription": "Upper threshold scaling alarm",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "ClusterName",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputRefFastScalingCluster370BCB5D9AC34CF6"
+      }
+     },
+     {
+      "Name": "ServiceName",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputFnGetAttEcsService81FC6EF6Name1D81E5BE"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/ECS",
+    "Period": 60,
+    "Statistic": "Average",
+    "Threshold": 70
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/CpuScaleOutPolicy/UpperAlarm/Resource"
+   }
+  },
+  "MemoryScaleOutPolicyUpperPolicy4FD55C58": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "EcsFastScalingAutoScalingMemoryScaleOutPolicyUpperPolicyF0217C2F",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "EcsScalingTargetF8C0CAF3"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "Cooldown": 60,
+     "MetricAggregationType": "Average",
+     "StepAdjustments": [
+      {
+       "MetricIntervalLowerBound": 0,
+       "MetricIntervalUpperBound": 10,
+       "ScalingAdjustment": 1
+      },
+      {
+       "MetricIntervalLowerBound": 10,
+       "ScalingAdjustment": 2
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/MemoryScaleOutPolicy/UpperPolicy/Resource"
+   }
+  },
+  "MemoryScaleOutPolicyUpperAlarm4C94F3F0": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MemoryScaleOutPolicyUpperPolicy4FD55C58"
+     }
+    ],
+    "AlarmDescription": "Upper threshold scaling alarm",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "ClusterName",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputRefFastScalingCluster370BCB5D9AC34CF6"
+      }
+     },
+     {
+      "Name": "ServiceName",
+      "Value": {
+       "Fn::ImportValue": "EcsFastScaling-Ecs:ExportsOutputFnGetAttEcsService81FC6EF6Name1D81E5BE"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "MemoryUtilization",
+    "Namespace": "AWS/ECS",
+    "Period": 60,
+    "Statistic": "Average",
+    "Threshold": 80
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/MemoryScaleOutPolicy/UpperAlarm/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WQTQ6CMBCFz+K+1MrOJfEAGmBvhlKxUNqmPxLT9O62EGJi4upNvnlvZjIlPhGCyQEWW9B+KgTvcGgc0AkldA+gteAUHFcSvFOWguBySJZUQCdYC2ZgDl0e8ods0po0KQWaLXdTadh7d39B45j+Syqat0fEYcahVoLlfNaIqFC+X8DRJw6VADPn1lrEiGpmlTd0tV+90349c6cRSdUzPNrjqyT4nF4wWs4L46XjM8P1ph/+R908HwEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-AutoScaling/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ScalingTargetId": {
+   "Description": "Auto Scaling Target ID",
+   "Value": {
+    "Ref": "EcsScalingTargetF8C0CAF3"
+   },
+   "Export": {
+    "Name": "FastScaling-ScalingTargetId"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,976 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "EcsFastScaling-Network.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EcsFastScaling-Network.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EcsFastScaling-Network": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://010928189167/ap-northeast-2",
+      "properties": {
+        "templateFile": "EcsFastScaling-Network.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "Environment": "dev",
+          "Owner": "DevOps",
+          "Project": "ECS-Fargate-Fast-Scaling"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-deploy-role-010928189167-ap-northeast-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-cfn-exec-role-010928189167-ap-northeast-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-010928189167-ap-northeast-2/5f84f2c8c72e885fd585c94222e30b23df8e4b5a0a9cbbfbc8568078ebdb169e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EcsFastScaling-Network.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-lookup-role-010928189167-ap-northeast-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EcsFastScaling-Network.assets"
+      ],
+      "metadata": {
+        "/EcsFastScaling-Network": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "Environment",
+                "Value": "dev"
+              },
+              {
+                "Key": "Owner",
+                "Value": "DevOps"
+              },
+              {
+                "Key": "Project",
+                "Value": "ECS-Fargate-Fast-Scaling"
+              }
+            ]
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpc9FCFBCED"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet1Subnet076381AB"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet1RouteTable0B1246CB"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet1RouteTableAssociation6BD55FB2"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet1DefaultRoute706A2846"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet1EIP0A4CD26E"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet1NATGateway2F34EB9B"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet2Subnet5F941AC3"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet2RouteTableF7193234"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet2RouteTableAssociation9186AEFF"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet2DefaultRoute3272E250"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet3SubnetE5AB3906"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet3RouteTableB2C3DC85"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet3RouteTableAssociationD35BB6CC"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPublicSubnet3DefaultRoute2DBF6294"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet1Subnet63EDB9F6"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet1RouteTable7BFC7957"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet1RouteTableAssociationE60F820E"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet1DefaultRouteE6716C47"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet2Subnet384C5E59"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet2RouteTable7B1B569B"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet2RouteTableAssociation3D3BE1F3"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet2DefaultRouteD8E817C2"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet3Subnet7C12E51C"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet3RouteTable732D981A"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet3RouteTableAssociation7FA9908A"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcPrivateSubnet3DefaultRoute6DCBBC53"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcIGW9FC421D7"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcVPCGW0BA332FD"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcRestrictDefaultSecurityGroupCustomResourceA3619271"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingVpc/S3Endpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingVpcS3Endpoint054B3243"
+          }
+        ],
+        "/EcsFastScaling-Network/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/EcsFastScaling-Network/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/EcsFastScaling-Network/AlbSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbSecurityGroup86A59E99"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingAlb/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingAlb348579DC"
+          }
+        ],
+        "/EcsFastScaling-Network/FastScalingAlb/HttpListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingAlbHttpListener9B24C6BA"
+          }
+        ],
+        "/EcsFastScaling-Network/AlbAccessLogBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbAccessLogBucket2FC90506"
+          }
+        ],
+        "/EcsFastScaling-Network/AlbAccessLogBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbAccessLogBucketPolicy5067FD6E"
+          }
+        ],
+        "/EcsFastScaling-Network/EcsTargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsTargetGroup06D481F9"
+          }
+        ],
+        "/EcsFastScaling-Network/EcsLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsLogGroupD0138CE7"
+          }
+        ],
+        "/EcsFastScaling-Network/VpcId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcId"
+          }
+        ],
+        "/EcsFastScaling-Network/AlbDnsName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbDnsName"
+          }
+        ],
+        "/EcsFastScaling-Network/AlbArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbArn"
+          }
+        ],
+        "/EcsFastScaling-Network/TargetGroupArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetGroupArn"
+          }
+        ],
+        "/EcsFastScaling-Network/EcsLogGroupName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsLogGroupName"
+          }
+        ],
+        "/EcsFastScaling-Network/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/EcsFastScaling-Network/Exports/Output{\"Fn::GetAtt\":[\"AlbSecurityGroup86A59E99\",\"GroupId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAlbSecurityGroup86A59E99GroupIdE3A37BC7"
+          }
+        ],
+        "/EcsFastScaling-Network/Exports/Output{\"Ref\":\"FastScalingVpc9FCFBCED\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefFastScalingVpc9FCFBCED455B3465"
+          }
+        ],
+        "/EcsFastScaling-Network/Exports/Output{\"Ref\":\"EcsTargetGroup06D481F9\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefEcsTargetGroup06D481F9D29B5DBE"
+          }
+        ],
+        "/EcsFastScaling-Network/Exports/Output{\"Ref\":\"FastScalingVpcPrivateSubnet1Subnet63EDB9F6\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefFastScalingVpcPrivateSubnet1Subnet63EDB9F6502140B8"
+          }
+        ],
+        "/EcsFastScaling-Network/Exports/Output{\"Ref\":\"FastScalingVpcPrivateSubnet2Subnet384C5E59\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefFastScalingVpcPrivateSubnet2Subnet384C5E5947FEE8CF"
+          }
+        ],
+        "/EcsFastScaling-Network/Exports/Output{\"Ref\":\"FastScalingVpcPrivateSubnet3Subnet7C12E51C\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefFastScalingVpcPrivateSubnet3Subnet7C12E51C7A734585"
+          }
+        ],
+        "/EcsFastScaling-Network/Exports/Output{\"Fn::GetAtt\":[\"FastScalingAlb348579DC\",\"LoadBalancerFullName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttFastScalingAlb348579DCLoadBalancerFullNameF8312E76"
+          }
+        ],
+        "/EcsFastScaling-Network/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EcsFastScaling-Network/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EcsFastScaling-Network"
+    },
+    "EcsFastScaling-Ecs.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EcsFastScaling-Ecs.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EcsFastScaling-Ecs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://010928189167/ap-northeast-2",
+      "properties": {
+        "templateFile": "EcsFastScaling-Ecs.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "Environment": "dev",
+          "Owner": "DevOps",
+          "Project": "ECS-Fargate-Fast-Scaling"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-deploy-role-010928189167-ap-northeast-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-cfn-exec-role-010928189167-ap-northeast-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-010928189167-ap-northeast-2/7e744b075bab52d222498e9e78165e545acec3fae2bc3ad6283353aa737e3f70.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EcsFastScaling-Ecs.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-lookup-role-010928189167-ap-northeast-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EcsFastScaling-Network",
+        "EcsFastScaling-Ecs.assets"
+      ],
+      "metadata": {
+        "/EcsFastScaling-Ecs": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "Environment",
+                "Value": "dev"
+              },
+              {
+                "Key": "Owner",
+                "Value": "DevOps"
+              },
+              {
+                "Key": "Project",
+                "Value": "ECS-Fargate-Fast-Scaling"
+              }
+            ]
+          }
+        ],
+        "/EcsFastScaling-Ecs/FastScalingCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingCluster370BCB5D"
+          }
+        ],
+        "/EcsFastScaling-Ecs/TaskExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskExecutionRole250D2532"
+          }
+        ],
+        "/EcsFastScaling-Ecs/TaskExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskExecutionRoleDefaultPolicyA84DD1B0"
+          }
+        ],
+        "/EcsFastScaling-Ecs/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskRole30FC0FBB"
+          }
+        ],
+        "/EcsFastScaling-Ecs/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskRoleDefaultPolicy07FC53DE"
+          }
+        ],
+        "/EcsFastScaling-Ecs/TaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefinitionB36D86D9"
+          }
+        ],
+        "/EcsFastScaling-Ecs/EcsSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsSecurityGroup44008BF1"
+          }
+        ],
+        "/EcsFastScaling-Ecs/EcsSecurityGroup/from EcsFastScalingNetworkAlbSecurityGroupE60AE997:8080": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsSecurityGroupfromEcsFastScalingNetworkAlbSecurityGroupE60AE99780801559065B"
+          }
+        ],
+        "/EcsFastScaling-Ecs/EcsService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsService81FC6EF6"
+          }
+        ],
+        "/EcsFastScaling-Ecs/EcsService/TaskCount/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsServiceTaskCountTarget02FCCE22"
+          }
+        ],
+        "/EcsFastScaling-Ecs/ClusterName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterName"
+          }
+        ],
+        "/EcsFastScaling-Ecs/ServiceName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceName"
+          }
+        ],
+        "/EcsFastScaling-Ecs/ServiceArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceArn"
+          }
+        ],
+        "/EcsFastScaling-Ecs/TaskDefinitionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefinitionArn"
+          }
+        ],
+        "/EcsFastScaling-Ecs/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/EcsFastScaling-Ecs/Exports/Output{\"Ref\":\"FastScalingCluster370BCB5D\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefFastScalingCluster370BCB5D9AC34CF6"
+          }
+        ],
+        "/EcsFastScaling-Ecs/Exports/Output{\"Fn::GetAtt\":[\"EcsService81FC6EF6\",\"Name\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttEcsService81FC6EF6Name1D81E5BE"
+          }
+        ],
+        "/EcsFastScaling-Ecs/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EcsFastScaling-Ecs/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EcsFastScaling-Ecs"
+    },
+    "EcsFastScaling-Monitoring.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EcsFastScaling-Monitoring.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EcsFastScaling-Monitoring": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://010928189167/ap-northeast-2",
+      "properties": {
+        "templateFile": "EcsFastScaling-Monitoring.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "Environment": "dev",
+          "Owner": "DevOps",
+          "Project": "ECS-Fargate-Fast-Scaling"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-deploy-role-010928189167-ap-northeast-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-cfn-exec-role-010928189167-ap-northeast-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-010928189167-ap-northeast-2/9df88fd3e945ee62ce731cbe3e92ef37134d22bb623d558af929c0671c525ca5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EcsFastScaling-Monitoring.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-lookup-role-010928189167-ap-northeast-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EcsFastScaling-Ecs",
+        "EcsFastScaling-Network",
+        "EcsFastScaling-Monitoring.assets"
+      ],
+      "metadata": {
+        "/EcsFastScaling-Monitoring": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "Environment",
+                "Value": "dev"
+              },
+              {
+                "Key": "Owner",
+                "Value": "DevOps"
+              },
+              {
+                "Key": "Project",
+                "Value": "ECS-Fargate-Fast-Scaling"
+              }
+            ]
+          }
+        ],
+        "/EcsFastScaling-Monitoring/FastScalingAlerts/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingAlertsE2879742"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/FastScalingDashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingDashboardD38D9BBC"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/HighCpuAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighCpuAlarm40723000"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/HighMemoryAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighMemoryAlarmB77DAB20"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/HighRequestRateAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighRequestRateAlarm3412369B"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/HighResponseTimeAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighResponseTimeAlarmCB9F63BA"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/CustomRpsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomRpsAlarm0E30B6B2"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/DashboardUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DashboardUrl"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/AlertTopicArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlertTopicArn"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EcsFastScaling-Monitoring/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EcsFastScaling-Monitoring"
+    },
+    "EcsFastScaling-AutoScaling.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EcsFastScaling-AutoScaling.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EcsFastScaling-AutoScaling": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://010928189167/ap-northeast-2",
+      "properties": {
+        "templateFile": "EcsFastScaling-AutoScaling.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "Environment": "dev",
+          "Owner": "DevOps",
+          "Project": "ECS-Fargate-Fast-Scaling"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-deploy-role-010928189167-ap-northeast-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-cfn-exec-role-010928189167-ap-northeast-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-010928189167-ap-northeast-2/fa9873efcc73de2679185986779ce70bf71e8856133fbe519218fa7e055b93b9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EcsFastScaling-AutoScaling.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-lookup-role-010928189167-ap-northeast-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EcsFastScaling-Monitoring",
+        "EcsFastScaling-Ecs",
+        "EcsFastScaling-AutoScaling.assets"
+      ],
+      "metadata": {
+        "/EcsFastScaling-AutoScaling": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "Environment",
+                "Value": "dev"
+              },
+              {
+                "Key": "Owner",
+                "Value": "DevOps"
+              },
+              {
+                "Key": "Project",
+                "Value": "ECS-Fargate-Fast-Scaling"
+              }
+            ]
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/EcsScalingTarget/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsScalingTargetRoleBA3CDD5B"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/EcsScalingTarget/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsScalingTargetF8C0CAF3"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/EcsScalingTarget/CpuTargetTracking/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsScalingTargetCpuTargetTracking2F78152A"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/ScaleOutPolicy/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScaleOutPolicyUpperPolicyE4D28961"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/ScaleOutPolicy/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScaleOutPolicyUpperAlarm7B44C313"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/ScaleInPolicy/LowerPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScaleInPolicyLowerPolicy55F72295"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/ScaleInPolicy/LowerAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScaleInPolicyLowerAlarm93D718C2"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/CpuScaleOutPolicy/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CpuScaleOutPolicyUpperPolicy8E1D145F"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/CpuScaleOutPolicy/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CpuScaleOutPolicyUpperAlarm46E3508A"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/MemoryScaleOutPolicy/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MemoryScaleOutPolicyUpperPolicy4FD55C58"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/MemoryScaleOutPolicy/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MemoryScaleOutPolicyUpperAlarm4C94F3F0"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/ScalingTargetId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScalingTargetId"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EcsFastScaling-AutoScaling/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EcsFastScaling-AutoScaling"
+    },
+    "EcsFastScaling-GitHub-Pipeline.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EcsFastScaling-GitHub-Pipeline.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EcsFastScaling-GitHub-Pipeline": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://010928189167/ap-northeast-2",
+      "properties": {
+        "templateFile": "EcsFastScaling-GitHub-Pipeline.template.json",
+        "terminationProtection": false,
+        "tags": {
+          "Environment": "dev",
+          "Owner": "DevOps",
+          "Project": "ECS-Fargate-Fast-Scaling"
+        },
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-deploy-role-010928189167-ap-northeast-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-cfn-exec-role-010928189167-ap-northeast-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-010928189167-ap-northeast-2/86c4ac5b4d4129608bde729bbff41d95319f41000522469760999c4694066a5a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EcsFastScaling-GitHub-Pipeline.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-lookup-role-010928189167-ap-northeast-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EcsFastScaling-GitHub-Pipeline.assets"
+      ],
+      "metadata": {
+        "/EcsFastScaling-GitHub-Pipeline": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "Environment",
+                "Value": "dev"
+              },
+              {
+                "Key": "Owner",
+                "Value": "DevOps"
+              },
+              {
+                "Key": "Project",
+                "Value": "ECS-Fargate-Fast-Scaling"
+              }
+            ]
+          }
+        ],
+        "/EcsFastScaling-GitHub-Pipeline/FastScalingBuild/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingBuildRole88B5D12D"
+          }
+        ],
+        "/EcsFastScaling-GitHub-Pipeline/FastScalingBuild/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingBuildRoleDefaultPolicyF2606EF5"
+          }
+        ],
+        "/EcsFastScaling-GitHub-Pipeline/FastScalingBuild/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FastScalingBuild18A43DB2"
+          }
+        ],
+        "/EcsFastScaling-GitHub-Pipeline/GitHubRepo": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GitHubRepo"
+          }
+        ],
+        "/EcsFastScaling-GitHub-Pipeline/CodeBuildProject": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeBuildProject"
+          }
+        ],
+        "/EcsFastScaling-GitHub-Pipeline/ECRRepoUri": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECRRepoUri"
+          }
+        ],
+        "/EcsFastScaling-GitHub-Pipeline/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/EcsFastScaling-GitHub-Pipeline/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EcsFastScaling-GitHub-Pipeline/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EcsFastScaling-GitHub-Pipeline"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

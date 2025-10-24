@@ -1,0 +1,20 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "7e744b075bab52d222498e9e78165e545acec3fae2bc3ad6283353aa737e3f70": {
+      "source": {
+        "path": "EcsFastScaling-Ecs.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "010928189167-ap-northeast-2": {
+          "bucketName": "cdk-hnb659fds-assets-010928189167-ap-northeast-2",
+          "objectKey": "7e744b075bab52d222498e9e78165e545acec3fae2bc3ad6283353aa737e3f70.json",
+          "region": "ap-northeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-file-publishing-role-010928189167-ap-northeast-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

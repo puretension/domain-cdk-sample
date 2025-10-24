@@ -1,0 +1,20 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "86c4ac5b4d4129608bde729bbff41d95319f41000522469760999c4694066a5a": {
+      "source": {
+        "path": "EcsFastScaling-GitHub-Pipeline.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "010928189167-ap-northeast-2": {
+          "bucketName": "cdk-hnb659fds-assets-010928189167-ap-northeast-2",
+          "objectKey": "86c4ac5b4d4129608bde729bbff41d95319f41000522469760999c4694066a5a.json",
+          "region": "ap-northeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-file-publishing-role-010928189167-ap-northeast-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

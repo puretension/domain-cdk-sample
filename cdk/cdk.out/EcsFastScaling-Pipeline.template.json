@@ -1,0 +1,1511 @@
+{
+ "Description": "CI/CD pipeline with Blue/Green deployment",
+ "Resources": {
+  "FastScalingCodeRepo5DDE3B9C": {
+   "Type": "AWS::CodeCommit::Repository",
+   "Properties": {
+    "RepositoryDescription": "ECS Fargate Fast Scaling Application Repository v2",
+    "RepositoryName": "fast-scaling-app-repo-v2",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingCodeRepo/Resource"
+   }
+  },
+  "FastScalingCodeRepoEcsFastScalingPipelineFastScalingPipeline89908FE2mainEventRuleD0FC7271": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "aws.codecommit"
+     ],
+     "resources": [
+      {
+       "Fn::GetAtt": [
+        "FastScalingCodeRepo5DDE3B9C",
+        "Arn"
+       ]
+      }
+     ],
+     "detail-type": [
+      "CodeCommit Repository State Change"
+     ],
+     "detail": {
+      "event": [
+       "referenceCreated",
+       "referenceUpdated"
+      ],
+      "referenceName": [
+       "main"
+      ]
+     }
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:codepipeline:ap-northeast-2:010928189167:",
+         {
+          "Ref": "FastScalingPipeline426C7FF7"
+         }
+        ]
+       ]
+      },
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "FastScalingPipelineEventsRole7D3CCCEE",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingCodeRepo/EcsFastScalingPipelineFastScalingPipeline89908FE2-main-EventRule/Resource"
+   }
+  },
+  "CodeBuildRole728CBADE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codebuild.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+       ]
+      ]
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "CodeBuildPolicy"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/CodeBuildRole/Resource"
+   }
+  },
+  "CodeBuildRoleDefaultPolicy829527DE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "codecommit:GitPull",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FastScalingCodeRepo5DDE3B9C",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:logs:ap-northeast-2:010928189167:log-group:/aws/codebuild/",
+           {
+            "Ref": "FastScalingBuild18A43DB2"
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:logs:ap-northeast-2:010928189167:log-group:/aws/codebuild/",
+           {
+            "Ref": "FastScalingBuild18A43DB2"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "codebuild:BatchPutCodeCoverages",
+        "codebuild:BatchPutTestCases",
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:codebuild:ap-northeast-2:010928189167:report-group/",
+          {
+           "Ref": "FastScalingBuild18A43DB2"
+          },
+          "-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FastScalingPipelineArtifactsBucket93A05FDF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "FastScalingPipelineArtifactsBucket93A05FDF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FastScalingPipelineArtifactsBucketEncryptionKey29445030",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CodeBuildRoleDefaultPolicy829527DE",
+    "Roles": [
+     {
+      "Ref": "CodeBuildRole728CBADE"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/CodeBuildRole/DefaultPolicy/Resource"
+   }
+  },
+  "FastScalingBuild18A43DB2": {
+   "Type": "AWS::CodeBuild::Project",
+   "Properties": {
+    "Artifacts": {
+     "Type": "NO_ARTIFACTS"
+    },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": {
+     "Fn::GetAtt": [
+      "FastScalingPipelineArtifactsBucketEncryptionKey29445030",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "EnvironmentVariables": [
+      {
+       "Name": "AWS_DEFAULT_REGION",
+       "Type": "PLAINTEXT",
+       "Value": "ap-northeast-2"
+      },
+      {
+       "Name": "AWS_ACCOUNT_ID",
+       "Type": "PLAINTEXT",
+       "Value": "010928189167"
+      },
+      {
+       "Name": "IMAGE_REPO_NAME",
+       "Type": "PLAINTEXT",
+       "Value": "fast-scaling-app"
+      }
+     ],
+     "Image": "aws/codebuild/standard:7.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": true,
+     "Type": "LINUX_CONTAINER"
+    },
+    "Name": "fast-scaling-build",
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "CodeBuildRole728CBADE",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "buildspec.yml",
+     "Location": {
+      "Fn::GetAtt": [
+       "FastScalingCodeRepo5DDE3B9C",
+       "CloneUrlHttp"
+      ]
+     },
+     "Type": "CODECOMMIT"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingBuild/Resource"
+   }
+  },
+  "GreenTargetGroupEEB2DF3E": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckEnabled": true,
+    "HealthCheckIntervalSeconds": 5,
+    "HealthCheckPath": "/health",
+    "HealthCheckProtocol": "HTTP",
+    "HealthCheckTimeoutSeconds": 4,
+    "HealthyThresholdCount": 2,
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Port": 8080,
+    "Protocol": "HTTP",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "UnhealthyThresholdCount": 2,
+    "VpcId": {
+     "Fn::ImportValue": "EcsFastScaling-Network:ExportsOutputRefFastScalingVpc9FCFBCED455B3465"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/GreenTargetGroup/Resource"
+   }
+  },
+  "FastScalingApp839D6E0B": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ApplicationName": "fast-scaling-app",
+    "ComputePlatform": "ECS",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingApp/Resource"
+   }
+  },
+  "FastScalingDeploymentGroupServiceRole3D1DAF69": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codedeploy.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSCodeDeployRoleForECS"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingDeploymentGroup/ServiceRole/Resource"
+   }
+  },
+  "FastScalingDeploymentGroupE6CEF352": {
+   "Type": "AWS::CodeDeploy::DeploymentGroup",
+   "Properties": {
+    "AlarmConfiguration": {
+     "Enabled": false
+    },
+    "ApplicationName": {
+     "Ref": "FastScalingApp839D6E0B"
+    },
+    "AutoRollbackConfiguration": {
+     "Enabled": true,
+     "Events": [
+      "DEPLOYMENT_FAILURE"
+     ]
+    },
+    "BlueGreenDeploymentConfiguration": {
+     "DeploymentReadyOption": {
+      "ActionOnTimeout": "STOP_DEPLOYMENT",
+      "WaitTimeInMinutes": 0
+     },
+     "TerminateBlueInstancesOnDeploymentSuccess": {
+      "Action": "TERMINATE",
+      "TerminationWaitTimeInMinutes": 5
+     }
+    },
+    "DeploymentConfigName": "CodeDeployDefault.ECSCanary10Percent5Minutes",
+    "DeploymentGroupName": "fast-scaling-deployment-group",
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+     "DeploymentType": "BLUE_GREEN"
+    },
+    "ECSServices": [
+     {
+      "ClusterName": "fast-scaling-cluster",
+      "ServiceName": "fast-scaling-service"
+     }
+    ],
+    "LoadBalancerInfo": {
+     "TargetGroupPairInfoList": [
+      {
+       "ProdTrafficRoute": {
+        "ListenerArns": [
+         {
+          "Fn::ImportValue": "EcsFastScaling-Network:ExportsOutputRefFastScalingAlbHttpListener9B24C6BA25601A89"
+         }
+        ]
+       },
+       "TargetGroups": [
+        {
+         "Name": {
+          "Fn::ImportValue": "EcsFastScaling-Network:ExportsOutputFnGetAttEcsTargetGroup06D481F9TargetGroupNameDC85442C"
+         }
+        },
+        {
+         "Name": {
+          "Fn::GetAtt": [
+           "GreenTargetGroupEEB2DF3E",
+           "TargetGroupName"
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "FastScalingDeploymentGroupServiceRole3D1DAF69",
+      "Arn"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingDeploymentGroup/Resource"
+   }
+  },
+  "FastScalingPipelineArtifactsBucketEncryptionKey29445030": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::010928189167:root"
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/ArtifactsBucketEncryptionKey/Resource"
+   }
+  },
+  "FastScalingPipelineArtifactsBucketEncryptionKeyAlias8F042756": {
+   "Type": "AWS::KMS::Alias",
+   "Properties": {
+    "AliasName": "alias/codepipeline-ecsfastscaling-pipeline-fastscalingpipeline-89908fe2",
+    "TargetKeyId": {
+     "Fn::GetAtt": [
+      "FastScalingPipelineArtifactsBucketEncryptionKey29445030",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/ArtifactsBucketEncryptionKeyAlias/Resource"
+   }
+  },
+  "FastScalingPipelineArtifactsBucket93A05FDF": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "FastScalingPipelineArtifactsBucketEncryptionKey29445030",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/ArtifactsBucket/Resource"
+   }
+  },
+  "FastScalingPipelineArtifactsBucketPolicy881F5867": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "FastScalingPipelineArtifactsBucket93A05FDF"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FastScalingPipelineArtifactsBucket93A05FDF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "FastScalingPipelineArtifactsBucket93A05FDF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/ArtifactsBucket/Policy/Resource"
+   }
+  },
+  "FastScalingPipelineRole14E2B112": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codepipeline.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/Role/Resource"
+   }
+  },
+  "FastScalingPipelineRoleDefaultPolicy42C8F1E5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FastScalingPipelineArtifactsBucket93A05FDF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "FastScalingPipelineArtifactsBucket93A05FDF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FastScalingPipelineArtifactsBucketEncryptionKey29445030",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FastScalingPipelineBuildCodeBuildCodePipelineActionRole0A497D26",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "FastScalingPipelineDeployCodeDeployCodePipelineActionRole7CDBC3C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "FastScalingPipelineSourceCodeCommitSourceCodePipelineActionRoleDC3685BE",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FastScalingPipelineRoleDefaultPolicy42C8F1E5",
+    "Roles": [
+     {
+      "Ref": "FastScalingPipelineRole14E2B112"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/Role/DefaultPolicy/Resource"
+   }
+  },
+  "FastScalingPipeline426C7FF7": {
+   "Type": "AWS::CodePipeline::Pipeline",
+   "Properties": {
+    "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "FastScalingPipelineArtifactsBucketEncryptionKey29445030",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
+     "Location": {
+      "Ref": "FastScalingPipelineArtifactsBucket93A05FDF"
+     },
+     "Type": "S3"
+    },
+    "Name": "fast-scaling-pipeline",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "FastScalingPipelineRole14E2B112",
+      "Arn"
+     ]
+    },
+    "Stages": [
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Source",
+         "Owner": "AWS",
+         "Provider": "CodeCommit",
+         "Version": "1"
+        },
+        "Configuration": {
+         "RepositoryName": {
+          "Fn::GetAtt": [
+           "FastScalingCodeRepo5DDE3B9C",
+           "Name"
+          ]
+         },
+         "BranchName": "main",
+         "PollForSourceChanges": false
+        },
+        "Name": "CodeCommit_Source",
+        "OutputArtifacts": [
+         {
+          "Name": "SourceOutput"
+         }
+        ],
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "FastScalingPipelineSourceCodeCommitSourceCodePipelineActionRoleDC3685BE",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Source"
+     },
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Build",
+         "Owner": "AWS",
+         "Provider": "CodeBuild",
+         "Version": "1"
+        },
+        "Configuration": {
+         "ProjectName": {
+          "Ref": "FastScalingBuild18A43DB2"
+         }
+        },
+        "InputArtifacts": [
+         {
+          "Name": "SourceOutput"
+         }
+        ],
+        "Name": "CodeBuild",
+        "OutputArtifacts": [
+         {
+          "Name": "BuildOutput"
+         }
+        ],
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "FastScalingPipelineBuildCodeBuildCodePipelineActionRole0A497D26",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Build"
+     },
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Deploy",
+         "Owner": "AWS",
+         "Provider": "CodeDeployToECS",
+         "Version": "1"
+        },
+        "Configuration": {
+         "ApplicationName": {
+          "Ref": "FastScalingApp839D6E0B"
+         },
+         "DeploymentGroupName": {
+          "Ref": "FastScalingDeploymentGroupE6CEF352"
+         },
+         "TaskDefinitionTemplateArtifact": "BuildOutput",
+         "TaskDefinitionTemplatePath": "taskdef.json",
+         "AppSpecTemplateArtifact": "BuildOutput",
+         "AppSpecTemplatePath": "appspec.yaml"
+        },
+        "InputArtifacts": [
+         {
+          "Name": "BuildOutput"
+         }
+        ],
+        "Name": "CodeDeploy",
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "FastScalingPipelineDeployCodeDeployCodePipelineActionRole7CDBC3C6",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "Deploy"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "DependsOn": [
+    "FastScalingPipelineRoleDefaultPolicy42C8F1E5",
+    "FastScalingPipelineRole14E2B112"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/Resource"
+   }
+  },
+  "FastScalingPipelineSourceCodeCommitSourceCodePipelineActionRoleDC3685BE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::010928189167:root"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/Source/CodeCommit_Source/CodePipelineActionRole/Resource"
+   }
+  },
+  "FastScalingPipelineSourceCodeCommitSourceCodePipelineActionRoleDefaultPolicyED52DED4": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FastScalingPipelineArtifactsBucket93A05FDF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "FastScalingPipelineArtifactsBucket93A05FDF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FastScalingPipelineArtifactsBucketEncryptionKey29445030",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "codecommit:CancelUploadArchive",
+        "codecommit:GetBranch",
+        "codecommit:GetCommit",
+        "codecommit:GetUploadArchiveStatus",
+        "codecommit:UploadArchive"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FastScalingCodeRepo5DDE3B9C",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FastScalingPipelineSourceCodeCommitSourceCodePipelineActionRoleDefaultPolicyED52DED4",
+    "Roles": [
+     {
+      "Ref": "FastScalingPipelineSourceCodeCommitSourceCodePipelineActionRoleDC3685BE"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/Source/CodeCommit_Source/CodePipelineActionRole/DefaultPolicy/Resource"
+   }
+  },
+  "FastScalingPipelineEventsRole7D3CCCEE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/EventsRole/Resource"
+   }
+  },
+  "FastScalingPipelineEventsRoleDefaultPolicy5B0F9F29": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "codepipeline:StartPipelineExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:codepipeline:ap-northeast-2:010928189167:",
+          {
+           "Ref": "FastScalingPipeline426C7FF7"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FastScalingPipelineEventsRoleDefaultPolicy5B0F9F29",
+    "Roles": [
+     {
+      "Ref": "FastScalingPipelineEventsRole7D3CCCEE"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/EventsRole/DefaultPolicy/Resource"
+   }
+  },
+  "FastScalingPipelineBuildCodeBuildCodePipelineActionRole0A497D26": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::010928189167:root"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/Build/CodeBuild/CodePipelineActionRole/Resource"
+   }
+  },
+  "FastScalingPipelineBuildCodeBuildCodePipelineActionRoleDefaultPolicy848D82F9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "codebuild:BatchGetBuilds",
+        "codebuild:StartBuild",
+        "codebuild:StopBuild"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FastScalingBuild18A43DB2",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FastScalingPipelineBuildCodeBuildCodePipelineActionRoleDefaultPolicy848D82F9",
+    "Roles": [
+     {
+      "Ref": "FastScalingPipelineBuildCodeBuildCodePipelineActionRole0A497D26"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/Build/CodeBuild/CodePipelineActionRole/DefaultPolicy/Resource"
+   }
+  },
+  "FastScalingPipelineDeployCodeDeployCodePipelineActionRole7CDBC3C6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::010928189167:root"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/Deploy/CodeDeploy/CodePipelineActionRole/Resource"
+   }
+  },
+  "FastScalingPipelineDeployCodeDeployCodePipelineActionRoleDefaultPolicy98F09F6C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "codedeploy:GetApplication",
+        "codedeploy:GetApplicationRevision",
+        "codedeploy:RegisterApplicationRevision"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:codedeploy:ap-northeast-2:010928189167:application:",
+          {
+           "Ref": "FastScalingApp839D6E0B"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "codedeploy:CreateDeployment",
+        "codedeploy:GetDeployment"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:codedeploy:ap-northeast-2:010928189167:deploymentgroup:",
+          {
+           "Ref": "FastScalingApp839D6E0B"
+          },
+          "/",
+          {
+           "Ref": "FastScalingDeploymentGroupE6CEF352"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "codedeploy:GetDeploymentConfig",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codedeploy:ap-northeast-2:010928189167:deploymentconfig:CodeDeployDefault.ECSCanary10Percent5Minutes"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecs:RegisterTaskDefinition",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEqualsIfExists": {
+         "iam:PassedToService": [
+          "ecs-tasks.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FastScalingPipelineArtifactsBucket93A05FDF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "FastScalingPipelineArtifactsBucket93A05FDF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FastScalingPipelineArtifactsBucketEncryptionKey29445030",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FastScalingPipelineDeployCodeDeployCodePipelineActionRoleDefaultPolicy98F09F6C",
+    "Roles": [
+     {
+      "Ref": "FastScalingPipelineDeployCodeDeployCodePipelineActionRole7CDBC3C6"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/FastScalingPipeline/Deploy/CodeDeploy/CodePipelineActionRole/DefaultPolicy/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/11Ry07EMAz8Fu7ZUMqJ4y6gPXBgVbijNDUrt2kS5VG0ivLv5FHRitOMPfbEdlr60DS0uWM/9sCH6SCwp+HDMT6RDqzyhgNJ2lcAbmgHWll0ytxOzALhagCu5hkdDZtEnr/lFkUCC0hnU4UXULSEkSCbU0qtqYwXJZCX7spi8e89ioGGi1EjcFfUSpOxYNYhF4oNPRNMcpTXpaXhqHXqZw6V/GTmCu5slNe5dRdW9wG0UDcaXrnddeXSfZjUl1I4p03+zP6lqqFGDQIlpIlXVkZeeSTTnC7xBmXNDEeBzJb3MonEPtJw8nyCsurKKmz32ccx5sy7d9q7evn6aZHINA4d7f3SNvQp/fBoEQ/GS4cz0K7iL0MSJyr+AQAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Pipeline/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "CodeCommitRepoUrl": {
+   "Description": "CodeCommit Repository Clone URL",
+   "Value": {
+    "Fn::GetAtt": [
+     "FastScalingCodeRepo5DDE3B9C",
+     "CloneUrlHttp"
+    ]
+   }
+  },
+  "ECRRepoUri": {
+   "Description": "ECR Repository URI",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "010928189167.dkr.ecr.ap-northeast-2.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/fast-scaling-app"
+     ]
+    ]
+   }
+  },
+  "PipelineName": {
+   "Description": "CodePipeline Name",
+   "Value": {
+    "Ref": "FastScalingPipeline426C7FF7"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

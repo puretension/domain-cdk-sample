@@ -1,0 +1,267 @@
+{
+ "Description": "GitHub + CodeBuild CI pipeline",
+ "Resources": {
+  "FastScalingBuildRole88B5D12D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codebuild.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-GitHub-Pipeline/FastScalingBuild/Role/Resource"
+   }
+  },
+  "FastScalingBuildRoleDefaultPolicyF2606EF5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:logs:ap-northeast-2:010928189167:log-group:/aws/codebuild/",
+           {
+            "Ref": "FastScalingBuild18A43DB2"
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:logs:ap-northeast-2:010928189167:log-group:/aws/codebuild/",
+           {
+            "Ref": "FastScalingBuild18A43DB2"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "codebuild:BatchPutCodeCoverages",
+        "codebuild:BatchPutTestCases",
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:codebuild:ap-northeast-2:010928189167:report-group/",
+          {
+           "Ref": "FastScalingBuild18A43DB2"
+          },
+          "-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:CompleteLayerUpload",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ecr:ap-northeast-2:010928189167:repository/fast-scaling-app"
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FastScalingBuildRoleDefaultPolicyF2606EF5",
+    "Roles": [
+     {
+      "Ref": "FastScalingBuildRole88B5D12D"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-GitHub-Pipeline/FastScalingBuild/Role/DefaultPolicy/Resource"
+   }
+  },
+  "FastScalingBuild18A43DB2": {
+   "Type": "AWS::CodeBuild::Project",
+   "Properties": {
+    "Artifacts": {
+     "Type": "NO_ARTIFACTS"
+    },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": "alias/aws/s3",
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "EnvironmentVariables": [
+      {
+       "Name": "AWS_DEFAULT_REGION",
+       "Type": "PLAINTEXT",
+       "Value": "ap-northeast-2"
+      },
+      {
+       "Name": "AWS_ACCOUNT_ID",
+       "Type": "PLAINTEXT",
+       "Value": "010928189167"
+      },
+      {
+       "Name": "IMAGE_REPO_NAME",
+       "Type": "PLAINTEXT",
+       "Value": "fast-scaling-app"
+      }
+     ],
+     "Image": "aws/codebuild/standard:7.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": true,
+     "Type": "LINUX_CONTAINER"
+    },
+    "Name": "fast-scaling-github-build",
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "FastScalingBuildRole88B5D12D",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "buildspec.yml",
+     "Location": "https://github.com/serithemage/ecs-fargate-fast-scaleout.git",
+     "ReportBuildStatus": true,
+     "Type": "GITHUB"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-GitHub-Pipeline/FastScalingBuild/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWOSw7CMBBDz8I+HUJ3bOEAVOEAKJ0O0rRpB+UDqqLcnRJgZevJst3CQWvQO/sKDQ5T47iHfI0WJ7WhWyb0YOghgaP49WQDKZSB+sRugNx5GQmjOt+Xny2K7QzZiKMPrdqJY1xrqLpSlKEgyWPNXFJ8pNrxp0Ut2waMYf9sNRy3e2NgbnxaIs8E5qtvpQ0XkrsAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-GitHub-Pipeline/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "GitHubRepo": {
+   "Description": "GitHub Repository URL",
+   "Value": "https://github.com/serithemage/ecs-fargate-fast-scaleout"
+  },
+  "CodeBuildProject": {
+   "Description": "CodeBuild Project Name",
+   "Value": {
+    "Ref": "FastScalingBuild18A43DB2"
+   }
+  },
+  "ECRRepoUri": {
+   "Description": "ECR Repository URI",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "010928189167.dkr.ecr.ap-northeast-2.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/fast-scaling-app"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

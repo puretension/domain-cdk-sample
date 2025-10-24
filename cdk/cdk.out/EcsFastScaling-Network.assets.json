@@ -1,0 +1,34 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "7f18a11296f35510ee16538afec983ed6312e12afbf81b777089a9f8e34e2474": {
+      "source": {
+        "path": "asset.7f18a11296f35510ee16538afec983ed6312e12afbf81b777089a9f8e34e2474",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "010928189167-ap-northeast-2": {
+          "bucketName": "cdk-hnb659fds-assets-010928189167-ap-northeast-2",
+          "objectKey": "7f18a11296f35510ee16538afec983ed6312e12afbf81b777089a9f8e34e2474.zip",
+          "region": "ap-northeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-file-publishing-role-010928189167-ap-northeast-2"
+        }
+      }
+    },
+    "5f84f2c8c72e885fd585c94222e30b23df8e4b5a0a9cbbfbc8568078ebdb169e": {
+      "source": {
+        "path": "EcsFastScaling-Network.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "010928189167-ap-northeast-2": {
+          "bucketName": "cdk-hnb659fds-assets-010928189167-ap-northeast-2",
+          "objectKey": "5f84f2c8c72e885fd585c94222e30b23df8e4b5a0a9cbbfbc8568078ebdb169e.json",
+          "region": "ap-northeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::010928189167:role/cdk-hnb659fds-file-publishing-role-010928189167-ap-northeast-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

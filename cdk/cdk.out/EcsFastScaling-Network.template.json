@@ -1,0 +1,1395 @@
+{
+ "Description": "Network infrastructure for ECS fast scaling solution",
+ "Resources": {
+  "FastScalingVpc9FCFBCED": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/Resource"
+   }
+  },
+  "FastScalingVpcPublicSubnet1Subnet076381AB": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-northeast-2a",
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/Subnet"
+   }
+  },
+  "FastScalingVpcPublicSubnet1RouteTable0B1246CB": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "FastScalingVpcPublicSubnet1RouteTableAssociation6BD55FB2": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPublicSubnet1RouteTable0B1246CB"
+    },
+    "SubnetId": {
+     "Ref": "FastScalingVpcPublicSubnet1Subnet076381AB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "FastScalingVpcPublicSubnet1DefaultRoute706A2846": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "FastScalingVpcIGW9FC421D7"
+    },
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPublicSubnet1RouteTable0B1246CB"
+    }
+   },
+   "DependsOn": [
+    "FastScalingVpcVPCGW0BA332FD"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "FastScalingVpcPublicSubnet1EIP0A4CD26E": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/EIP"
+   }
+  },
+  "FastScalingVpcPublicSubnet1NATGateway2F34EB9B": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "FastScalingVpcPublicSubnet1EIP0A4CD26E",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "FastScalingVpcPublicSubnet1Subnet076381AB"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "DependsOn": [
+    "FastScalingVpcPublicSubnet1DefaultRoute706A2846",
+    "FastScalingVpcPublicSubnet1RouteTableAssociation6BD55FB2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet1/NATGateway"
+   }
+  },
+  "FastScalingVpcPublicSubnet2Subnet5F941AC3": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-northeast-2b",
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet2"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet2/Subnet"
+   }
+  },
+  "FastScalingVpcPublicSubnet2RouteTableF7193234": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet2"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet2/RouteTable"
+   }
+  },
+  "FastScalingVpcPublicSubnet2RouteTableAssociation9186AEFF": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPublicSubnet2RouteTableF7193234"
+    },
+    "SubnetId": {
+     "Ref": "FastScalingVpcPublicSubnet2Subnet5F941AC3"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "FastScalingVpcPublicSubnet2DefaultRoute3272E250": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "FastScalingVpcIGW9FC421D7"
+    },
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPublicSubnet2RouteTableF7193234"
+    }
+   },
+   "DependsOn": [
+    "FastScalingVpcVPCGW0BA332FD"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "FastScalingVpcPublicSubnet3SubnetE5AB3906": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-northeast-2c",
+    "CidrBlock": "10.0.2.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet3"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet3/Subnet"
+   }
+  },
+  "FastScalingVpcPublicSubnet3RouteTableB2C3DC85": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet3"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet3/RouteTable"
+   }
+  },
+  "FastScalingVpcPublicSubnet3RouteTableAssociationD35BB6CC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPublicSubnet3RouteTableB2C3DC85"
+    },
+    "SubnetId": {
+     "Ref": "FastScalingVpcPublicSubnet3SubnetE5AB3906"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet3/RouteTableAssociation"
+   }
+  },
+  "FastScalingVpcPublicSubnet3DefaultRoute2DBF6294": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "FastScalingVpcIGW9FC421D7"
+    },
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPublicSubnet3RouteTableB2C3DC85"
+    }
+   },
+   "DependsOn": [
+    "FastScalingVpcVPCGW0BA332FD"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PublicSubnet3/DefaultRoute"
+   }
+  },
+  "FastScalingVpcPrivateSubnet1Subnet63EDB9F6": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-northeast-2a",
+    "CidrBlock": "10.0.3.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1/Subnet"
+   }
+  },
+  "FastScalingVpcPrivateSubnet1RouteTable7BFC7957": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1/RouteTable"
+   }
+  },
+  "FastScalingVpcPrivateSubnet1RouteTableAssociationE60F820E": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPrivateSubnet1RouteTable7BFC7957"
+    },
+    "SubnetId": {
+     "Ref": "FastScalingVpcPrivateSubnet1Subnet63EDB9F6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "FastScalingVpcPrivateSubnet1DefaultRouteE6716C47": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "FastScalingVpcPublicSubnet1NATGateway2F34EB9B"
+    },
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPrivateSubnet1RouteTable7BFC7957"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "FastScalingVpcPrivateSubnet2Subnet384C5E59": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-northeast-2b",
+    "CidrBlock": "10.0.4.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2/Subnet"
+   }
+  },
+  "FastScalingVpcPrivateSubnet2RouteTable7B1B569B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2/RouteTable"
+   }
+  },
+  "FastScalingVpcPrivateSubnet2RouteTableAssociation3D3BE1F3": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPrivateSubnet2RouteTable7B1B569B"
+    },
+    "SubnetId": {
+     "Ref": "FastScalingVpcPrivateSubnet2Subnet384C5E59"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "FastScalingVpcPrivateSubnet2DefaultRouteD8E817C2": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "FastScalingVpcPublicSubnet1NATGateway2F34EB9B"
+    },
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPrivateSubnet2RouteTable7B1B569B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "FastScalingVpcPrivateSubnet3Subnet7C12E51C": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-northeast-2c",
+    "CidrBlock": "10.0.5.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3/Subnet"
+   }
+  },
+  "FastScalingVpcPrivateSubnet3RouteTable732D981A": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3/RouteTable"
+   }
+  },
+  "FastScalingVpcPrivateSubnet3RouteTableAssociation7FA9908A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPrivateSubnet3RouteTable732D981A"
+    },
+    "SubnetId": {
+     "Ref": "FastScalingVpcPrivateSubnet3Subnet7C12E51C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3/RouteTableAssociation"
+   }
+  },
+  "FastScalingVpcPrivateSubnet3DefaultRoute6DCBBC53": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "FastScalingVpcPublicSubnet1NATGateway2F34EB9B"
+    },
+    "RouteTableId": {
+     "Ref": "FastScalingVpcPrivateSubnet3RouteTable732D981A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/PrivateSubnet3/DefaultRoute"
+   }
+  },
+  "FastScalingVpcIGW9FC421D7": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Name",
+      "Value": "EcsFastScaling-Network/FastScalingVpc"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/IGW"
+   }
+  },
+  "FastScalingVpcVPCGW0BA332FD": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "FastScalingVpcIGW9FC421D7"
+    },
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/VPCGW"
+   }
+  },
+  "FastScalingVpcRestrictDefaultSecurityGroupCustomResourceA3619271": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "FastScalingVpc9FCFBCED",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": "010928189167"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/RestrictDefaultSecurityGroupCustomResource/Default"
+   }
+  },
+  "FastScalingVpcS3Endpoint054B3243": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "RouteTableIds": [
+     {
+      "Ref": "FastScalingVpcPrivateSubnet1RouteTable7BFC7957"
+     },
+     {
+      "Ref": "FastScalingVpcPrivateSubnet2RouteTable7B1B569B"
+     },
+     {
+      "Ref": "FastScalingVpcPrivateSubnet3RouteTable732D981A"
+     },
+     {
+      "Ref": "FastScalingVpcPublicSubnet1RouteTable0B1246CB"
+     },
+     {
+      "Ref": "FastScalingVpcPublicSubnet2RouteTableF7193234"
+     },
+     {
+      "Ref": "FastScalingVpcPublicSubnet3RouteTableB2C3DC85"
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".s3"
+      ]
+     ]
+    },
+    "VpcEndpointType": "Gateway",
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingVpc/S3Endpoint/Resource"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ec2:ap-northeast-2:010928189167:security-group/",
+             {
+              "Fn::GetAtt": [
+               "FastScalingVpc9FCFBCED",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-010928189167-ap-northeast-2",
+     "S3Key": "7f18a11296f35510ee16538afec983ed6312e12afbf81b777089a9f8e34e2474.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.7f18a11296f35510ee16538afec983ed6312e12afbf81b777089a9f8e34e2474",
+    "aws:asset:property": "Code"
+   }
+  },
+  "AlbSecurityGroup86A59E99": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for Application Load Balancer",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow HTTP traffic",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     },
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow HTTPS traffic",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/AlbSecurityGroup/Resource"
+   }
+  },
+  "FastScalingAlb348579DC": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     },
+     {
+      "Key": "access_logs.s3.enabled",
+      "Value": "true"
+     },
+     {
+      "Key": "access_logs.s3.bucket",
+      "Value": {
+       "Ref": "AlbAccessLogBucket2FC90506"
+      }
+     },
+     {
+      "Key": "access_logs.s3.prefix",
+      "Value": "alb-access-logs"
+     }
+    ],
+    "Name": "fast-scaling-alb",
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "AlbSecurityGroup86A59E99",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "FastScalingVpcPublicSubnet1Subnet076381AB"
+     },
+     {
+      "Ref": "FastScalingVpcPublicSubnet2Subnet5F941AC3"
+     },
+     {
+      "Ref": "FastScalingVpcPublicSubnet3SubnetE5AB3906"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "AlbAccessLogBucketPolicy5067FD6E",
+    "AlbAccessLogBucket2FC90506",
+    "FastScalingVpcPublicSubnet1DefaultRoute706A2846",
+    "FastScalingVpcPublicSubnet1RouteTableAssociation6BD55FB2",
+    "FastScalingVpcPublicSubnet2DefaultRoute3272E250",
+    "FastScalingVpcPublicSubnet2RouteTableAssociation9186AEFF",
+    "FastScalingVpcPublicSubnet3DefaultRoute2DBF6294",
+    "FastScalingVpcPublicSubnet3RouteTableAssociationD35BB6CC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingAlb/Resource"
+   }
+  },
+  "FastScalingAlbHttpListener9B24C6BA": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "EcsTargetGroup06D481F9"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "FastScalingAlb348579DC"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "DependsOn": [
+    "AlbAccessLogBucketPolicy5067FD6E",
+    "AlbAccessLogBucket2FC90506"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/FastScalingAlb/HttpListener/Resource"
+   }
+  },
+  "AlbAccessLogBucket2FC90506": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": "fast-scaling-alb-logs-010928189167-ap-northeast-2",
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 30,
+       "Id": "DeleteOldLogs",
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/AlbAccessLogBucket/Resource"
+   }
+  },
+  "AlbAccessLogBucketPolicy5067FD6E": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "AlbAccessLogBucket2FC90506"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutObject",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::600734575887:root"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "AlbAccessLogBucket2FC90506",
+            "Arn"
+           ]
+          },
+          "/alb-access-logs/AWSLogs/010928189167/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "StringEquals": {
+         "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "delivery.logs.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "AlbAccessLogBucket2FC90506",
+            "Arn"
+           ]
+          },
+          "/alb-access-logs/AWSLogs/010928189167/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:GetBucketAcl",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "delivery.logs.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "AlbAccessLogBucket2FC90506",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/AlbAccessLogBucket/Policy/Resource"
+   }
+  },
+  "EcsTargetGroup06D481F9": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckEnabled": true,
+    "HealthCheckIntervalSeconds": 5,
+    "HealthCheckPath": "/health",
+    "HealthCheckProtocol": "HTTP",
+    "HealthCheckTimeoutSeconds": 4,
+    "HealthyThresholdCount": 2,
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Port": 8080,
+    "Protocol": "HTTP",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ],
+    "TargetGroupAttributes": [
+     {
+      "Key": "deregistration_delay.timeout_seconds",
+      "Value": "10"
+     },
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "UnhealthyThresholdCount": 2,
+    "VpcId": {
+     "Ref": "FastScalingVpc9FCFBCED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/EcsTargetGroup/Resource"
+   }
+  },
+  "EcsLogGroupD0138CE7": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/ecs/fast-scaling-app",
+    "RetentionInDays": 7,
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "Owner",
+      "Value": "DevOps"
+     },
+     {
+      "Key": "Project",
+      "Value": "ECS-Fargate-Fast-Scaling"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/EcsLogGroup/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21SwW7CMAz9lt1D1rHTjoDQhIS2ChDXKU29zhCSKnGKUNV/n0tb2kk7+b3nJ+vZyVy+JIlMntQ1zHR+nhnMZL0npc+Cpa8a9FzWx1KL1bc9piuRxsyg3sfMArXaiHYuEhxUZmDUR20RgtOoCJ19mFuw3qRt+VD0rgiu6iZSjxXDcfDGEnjGg6FL0rMFcdafC1gSvcJh1zYvHVrqrQ+6Bx090u3du1jeU06FRoBRgVAbp/JMGWU12qLi/RdlyUvfw2+5t7z3wLcT/vCpDwOB7T0DnvQPyhe80hBkQhsRXmW9jPrcrd+jrqSOB9xGueONMK4Ist664jFxwE0jdhBc9JrvHQO5y0j5Hf5vpd5VmLeJQwDi71DwJVr/Z6QyUiOsy0GewnM1T+Qbf59TQJz5aAkvIHdd/QUKbHN0WwIAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "EcsFastScaling-Network/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "VpcId": {
+   "Description": "VPC ID",
+   "Value": {
+    "Ref": "FastScalingVpc9FCFBCED"
+   },
+   "Export": {
+    "Name": "FastScaling-VpcId"
+   }
+  },
+  "AlbDnsName": {
+   "Description": "ALB DNS Name",
+   "Value": {
+    "Fn::GetAtt": [
+     "FastScalingAlb348579DC",
+     "DNSName"
+    ]
+   },
+   "Export": {
+    "Name": "FastScaling-AlbDnsName"
+   }
+  },
+  "AlbArn": {
+   "Description": "ALB ARN",
+   "Value": {
+    "Ref": "FastScalingAlb348579DC"
+   },
+   "Export": {
+    "Name": "FastScaling-AlbArn"
+   }
+  },
+  "TargetGroupArn": {
+   "Description": "Target Group ARN",
+   "Value": {
+    "Ref": "EcsTargetGroup06D481F9"
+   },
+   "Export": {
+    "Name": "FastScaling-TargetGroupArn"
+   }
+  },
+  "EcsLogGroupName": {
+   "Description": "ECS Log Group Name",
+   "Value": {
+    "Ref": "EcsLogGroupD0138CE7"
+   },
+   "Export": {
+    "Name": "FastScaling-EcsLogGroupName"
+   }
+  },
+  "ExportsOutputFnGetAttAlbSecurityGroup86A59E99GroupIdE3A37BC7": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AlbSecurityGroup86A59E99",
+     "GroupId"
+    ]
+   },
+   "Export": {
+    "Name": "EcsFastScaling-Network:ExportsOutputFnGetAttAlbSecurityGroup86A59E99GroupIdE3A37BC7"
+   }
+  },
+  "ExportsOutputRefFastScalingVpc9FCFBCED455B3465": {
+   "Value": {
+    "Ref": "FastScalingVpc9FCFBCED"
+   },
+   "Export": {
+    "Name": "EcsFastScaling-Network:ExportsOutputRefFastScalingVpc9FCFBCED455B3465"
+   }
+  },
+  "ExportsOutputRefEcsTargetGroup06D481F9D29B5DBE": {
+   "Value": {
+    "Ref": "EcsTargetGroup06D481F9"
+   },
+   "Export": {
+    "Name": "EcsFastScaling-Network:ExportsOutputRefEcsTargetGroup06D481F9D29B5DBE"
+   }
+  },
+  "ExportsOutputRefFastScalingVpcPrivateSubnet1Subnet63EDB9F6502140B8": {
+   "Value": {
+    "Ref": "FastScalingVpcPrivateSubnet1Subnet63EDB9F6"
+   },
+   "Export": {
+    "Name": "EcsFastScaling-Network:ExportsOutputRefFastScalingVpcPrivateSubnet1Subnet63EDB9F6502140B8"
+   }
+  },
+  "ExportsOutputRefFastScalingVpcPrivateSubnet2Subnet384C5E5947FEE8CF": {
+   "Value": {
+    "Ref": "FastScalingVpcPrivateSubnet2Subnet384C5E59"
+   },
+   "Export": {
+    "Name": "EcsFastScaling-Network:ExportsOutputRefFastScalingVpcPrivateSubnet2Subnet384C5E5947FEE8CF"
+   }
+  },
+  "ExportsOutputRefFastScalingVpcPrivateSubnet3Subnet7C12E51C7A734585": {
+   "Value": {
+    "Ref": "FastScalingVpcPrivateSubnet3Subnet7C12E51C"
+   },
+   "Export": {
+    "Name": "EcsFastScaling-Network:ExportsOutputRefFastScalingVpcPrivateSubnet3Subnet7C12E51C7A734585"
+   }
+  },
+  "ExportsOutputFnGetAttFastScalingAlb348579DCLoadBalancerFullNameF8312E76": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FastScalingAlb348579DC",
+     "LoadBalancerFullName"
+    ]
+   },
+   "Export": {
+    "Name": "EcsFastScaling-Network:ExportsOutputFnGetAttFastScalingAlb348579DCLoadBalancerFullNameF8312E76"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
