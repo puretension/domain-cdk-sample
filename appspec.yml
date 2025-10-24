@@ -1,9 +1,10 @@
 version: 0.0
 Resources:
   - TargetService:
-      Type: AWS::ECS::Service 
+      Type: AWS::ECS::Service
       Properties:
         TaskDefinition: <TASK_DEFINITION>
         LoadBalancerInfo:
           ContainerName: "AppContainer"
           ContainerPort: 8080
+        PlatformVersion: "1.4.0"

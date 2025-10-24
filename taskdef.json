@@ -4,26 +4,47 @@
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
   "memory": "512",
-  "executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/ecsTaskExecutionRole",
-  "taskRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/ecsTaskRole",
+  "executionRoleArn": "arn:aws:iam::010928189167:role/EcsFastScaling-Ecs-TaskExecutionRole250D2532-tri4pkLQOSh5",
+  "taskRoleArn": "arn:aws:iam::010928189167:role/EcsFastScaling-Ecs-TaskRole30FC0FBB-HvXjXw8utfTI",
   "containerDefinitions": [
     {
       "name": "AppContainer",
-      "image": "<IMAGE_URI>",
+      "image": "<IMAGE1_URI>",
+      "essential": true,
       "portMappings": [
         {
           "containerPort": 8080,
           "protocol": "tcp"
         }
       ],
-      "essential": true,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/fast-scaling-app",
-          "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "ecs"
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "app"
         }
+      },
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "ap-northeast-2"
+        },
+        {
+          "name": "CLOUDWATCH_NAMESPACE",
+          "value": "FastScaling/Application"
+        }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
       }
     }
   ]
